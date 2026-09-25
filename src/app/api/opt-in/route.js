@@ -14,12 +14,12 @@ export async function POST(request){
 
         // Setup Nodemailer transporter
         const transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
+            host: process.env.EMAIL_HOST?.replace(/'/g, ''), // Strip quotes just in case
             port: parseInt(process.env.EMAIL_PORT || '465'),
-            secure: process.env.EMAIL_USE_SSL === 'True',
+            secure: process.env.EMAIL_USE_SSL?.toLowerCase() === 'true',
             auth: {
-                user: process.env.EMAIL_HOST_USER,
-                pass: process.env.EMAIL_HOST_PASSWORD,
+                user: process.env.EMAIL_HOST_USER?.replace(/'/g, ''),
+                pass: process.env.EMAIL_HOST_PASSWORD?.replace(/'/g, ''),
             },
         });
 
