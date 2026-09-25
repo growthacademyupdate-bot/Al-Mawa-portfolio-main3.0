@@ -32,41 +32,21 @@ export async function POST(req) {
         return NextResponse.json({ success: false, error: "Password is wrong" });
       }
 
-      // Connect to MongoDB
-      if (mongoose.connection.readyState === 0) {
-        await mongoose.connect(process.env.MONGODB_URI);
-      }
-
-      // Generate OTP
-      const newOTP = generateOTP();
-
-      // Clear existing OTP records
-      await AdminOTP.deleteOne({ email });
-
-      // Create new OTP record
-      await AdminOTP.create({
-        email,
-        otp: newOTP,
-        attempts: 0,
-      });
-
-      // Send OTP email
-      const emailSent = await sendOTPEmail(email, newOTP);
-
-      if (!emailSent) {
-        return NextResponse.json({
-          success: false,
-          error: "Failed to send OTP email. Please try again.",
-        });
-      }
-
-      return NextResponse.json({
+      // Set cookie for authentication
+      const res = NextResponse.json({
         success: true,
-        message: "OTP sent to your email",
-        step: 2,
-        requiresOTP: true,
-        backupCodesGenerated: true,
+        message: "Login successful",
+        step: 3,
       });
+
+      res.cookies.set("admin", "true", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24,
+      });
+
+      return res;
     }
 
     // STEP 2: Verify OTP

@@ -37,12 +37,23 @@ const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
       console.log("📤 Login response:", res.data);
       
       if (res.data.success) {
-        console.log("✅ Credentials verified, moving to OTP step");
-        toast.success("Credentials Verified!", {
-          description: "Enter the OTP sent to your email"
-        });
-        setAdminEmail(data.email);
-        setLoginStep(2);
+        if (res.data.step === 3) {
+          toast.success("Login Successful!", {
+            description: "Welcome to admin panel"
+          });
+          if (onLoginSuccess) {
+            onLoginSuccess();
+          } else {
+            window.location.href = "/admin";
+          }
+        } else {
+          console.log("✅ Credentials verified, moving to OTP step");
+          toast.success("Credentials Verified!", {
+            description: "Enter the OTP sent to your email"
+          });
+          setAdminEmail(data.email);
+          setLoginStep(2);
+        }
       } else {
         console.log("❌ Login failed:", res.data.error);
         toast.error(res.data.error || "Invalid credentials", {
@@ -109,7 +120,7 @@ const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
         <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 flex items-center gap-2">
           <span className="text-lg">🔒</span>
           <p className="text-xs text-green-700 dark:text-green-300">
-            Two-step verification enabled for your security
+            Secure admin login area
           </p>
         </div>
 
@@ -155,7 +166,7 @@ const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
         {/* Info Footer */}
         <div className="pt-4 border-t border-zinc-200 dark:border-zinc-700">
           <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center">
-            📧 You&apos;ll receive a 6-digit code via email after entering your credentials.
+            Ensure your credentials are kept secure at all times.
           </p>
         </div>
       </form>
